@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { collection, query, orderBy, limit, getDocs, where, documentId, in as firebaseIn } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getDocs, where, documentId, in as firestoreIn } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import PostCard from '@/components/Posts/PostCard';
@@ -74,11 +74,14 @@ const HomePage = () => {
       }
 
       const postsSnapshot = await getDocs(postsQuery);
-      const fetchedPosts = postsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate(),
-      })) as Post[];
+      const fetchedPosts = postsSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate() || new Date(),
+        } as Post;
+      });
 
       setPosts(fetchedPosts);
     } catch (error) {

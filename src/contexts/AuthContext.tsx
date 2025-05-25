@@ -13,6 +13,11 @@ interface UserProfile {
   profilePicUrl?: string;
   isPrivate: boolean;
   isVerified: boolean;
+  isAdmin?: boolean;
+  followerCount: number;
+  followingCount: number;
+  postCount: number;
+  likeCount: number;
   socialLinks?: {
     twitter?: string;
     github?: string;

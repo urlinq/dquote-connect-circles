@@ -58,7 +58,21 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (isOwnProfile && currentUserProfile) {
-      setProfile(currentUserProfile);
+      const profileData: UserProfile = {
+        uid: currentUserProfile.uid,
+        username: currentUserProfile.username,
+        displayName: currentUserProfile.displayName,
+        bio: currentUserProfile.bio,
+        profilePicUrl: currentUserProfile.profilePicUrl,
+        isVerified: currentUserProfile.isVerified,
+        isPrivate: currentUserProfile.isPrivate,
+        followerCount: currentUserProfile.followerCount || 0,
+        followingCount: currentUserProfile.followingCount || 0,
+        postCount: currentUserProfile.postCount || 0,
+        likeCount: currentUserProfile.likeCount || 0,
+        socialLinks: currentUserProfile.socialLinks,
+      };
+      setProfile(profileData);
       fetchUserPosts(currentUserProfile.uid);
     } else if (username) {
       fetchUserProfile(username);
@@ -74,8 +88,22 @@ const ProfilePage = () => {
       const usersSnapshot = await getDocs(usersQuery);
       
       if (!usersSnapshot.empty) {
-        const userData = usersSnapshot.docs[0].data() as UserProfile;
-        setProfile(userData);
+        const userData = usersSnapshot.docs[0].data();
+        const profileData: UserProfile = {
+          uid: userData.uid,
+          username: userData.username,
+          displayName: userData.displayName,
+          bio: userData.bio,
+          profilePicUrl: userData.profilePicUrl,
+          isVerified: userData.isVerified || false,
+          isPrivate: userData.isPrivate || false,
+          followerCount: userData.followerCount || 0,
+          followingCount: userData.followingCount || 0,
+          postCount: userData.postCount || 0,
+          likeCount: userData.likeCount || 0,
+          socialLinks: userData.socialLinks,
+        };
+        setProfile(profileData);
         fetchUserPosts(userData.uid);
         checkFollowStatus(userData.uid);
       }
