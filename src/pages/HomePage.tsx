@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { collection, query, orderBy, limit, getDocs, where, documentId } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getDocs, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import PostCard from '@/components/Posts/PostCard';
@@ -17,6 +17,18 @@ interface Post {
   createdAt: Date;
   likeCount: number;
   commentCount: number;
+  isLiked?: boolean;
+}
+
+interface FirestorePostData {
+  userId: string;
+  username: string;
+  displayName: string;
+  text: string;
+  imageUrl?: string;
+  createdAt: any;
+  likeCount?: number;
+  commentCount?: number;
   isLiked?: boolean;
 }
 
@@ -76,7 +88,7 @@ const HomePage = () => {
 
       const postsSnapshot = await getDocs(postsQuery);
       const fetchedPosts = postsSnapshot.docs.map(doc => {
-        const data = doc.data();
+        const data = doc.data() as FirestorePostData;
         return {
           id: doc.id,
           userId: data.userId,
