@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { collection, query, orderBy, limit, getDocs, where, documentId, in as firestoreIn } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getDocs, where, documentId } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import PostCard from '@/components/Posts/PostCard';
@@ -57,10 +57,11 @@ const HomePage = () => {
       let postsQuery;
       
       if (following.length > 0) {
-        // Get posts from users we follow
+        // Get posts from users we follow (limit to 10 for Firestore 'in' constraint)
+        const followingChunk = following.slice(0, 10);
         postsQuery = query(
           collection(db, 'posts'),
-          where('userId', 'in', following.slice(0, 10)), // Firestore limit
+          where('userId', 'in', followingChunk),
           orderBy('createdAt', 'desc'),
           limit(20)
         );
@@ -78,8 +79,15 @@ const HomePage = () => {
         const data = doc.data();
         return {
           id: doc.id,
-          ...data,
+          userId: data.userId,
+          username: data.username,
+          displayName: data.displayName,
+          text: data.text,
+          imageUrl: data.imageUrl,
           createdAt: data.createdAt?.toDate() || new Date(),
+          likeCount: data.likeCount || 0,
+          commentCount: data.commentCount || 0,
+          isLiked: data.isLiked || false,
         } as Post;
       });
 
